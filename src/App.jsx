@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from 'react';
-
-const API_URL = 'https://suinocultura-backend.onrender.com';
+import React, { useState } from 'react';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Lotes from './pages/Lotes';
 
 export default function App() {
-  const [lotes, setLotes] = useState([]);
+  const [logado, setLogado] = useState(false);
+  const [tela, setTela] = useState("dashboard");
 
-  useEffect(() => {
-    fetch(`${API_URL}/lotes`)
-      .then(res => res.json())
-      .then(data => setLotes(data));
-  }, []);
+  if (!logado) return <Login onLogin={() => setLogado(true)} />;
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Sistema de Suinocultura</h1>
-      <h2>Lotes</h2>
-      <ul>
-        {lotes.length > 0 ? lotes.map((lote, i) => (
-          <li key={i}>{JSON.stringify(lote)}</li>
-        )) : <li>Nenhum lote encontrado.</li>}
-      </ul>
+    <div className="container">
+      <nav className="menu">
+        <button onClick={() => setTela("dashboard")}>📊 Dashboard</button>
+        <button onClick={() => setTela("lotes")}>🐖 Lotes</button>
+        <button onClick={() => setLogado(false)}>🚪 Sair</button>
+      </nav>
+      <div className="conteudo">
+        {tela === "dashboard" && <Dashboard />}
+        {tela === "lotes" && <Lotes />}
+      </div>
     </div>
   );
 }
