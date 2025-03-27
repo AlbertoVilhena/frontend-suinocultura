@@ -4,6 +4,12 @@ export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
+  const [criandoConta, setCriandoConta] = useState(false);
+
+  const validarEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
 
   const logar = async () => {
     try {
@@ -20,12 +26,47 @@ export default function Login({ onLogin }) {
     }
   };
 
+  const criarConta = async () => {
+    if (!validarEmail(email)) {
+      setErro("❌ E-mail inválido.");
+      return;
+    }
+    if (!senha || senha.length < 4) {
+      setErro("❌ A senha deve ter pelo menos 4 caracteres.");
+      return;
+    }
+    try {
+      const res = await fetch("https://suinocultura-backend.onrender.com/usuarios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha })
+      });
+      if (!res.ok) throw new Error("Erro ao criar conta");
+      const data = await res.json();
+      alert("✅ Conta criada com sucesso!");
+      setCriandoConta(false);
+      setErro("");
+    } catch (err) {
+      setErro("❌ Erro ao criar conta.");
+    }
+  };
+
   return (
     <div className="login">
-      <h1>🐽 Sistema de Suinocultura</h1>
+      <h1>{criandoConta ? "🆕 Criar Conta" : "🐽 Login no Sistema"}</h1>
       <input type="email" placeholder="E-mail" value={email} onChange={e => setEmail(e.target.value)} />
       <input type="password" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} />
-      <button onClick={logar}>Entrar</button>
+      {criandoConta ? (
+        <>
+          <button onClick={criarConta}>Cadastrar</button>
+          <button onClick={() => { setCriandoConta(false); setErro(""); }}>Voltar ao login</button>
+        </>
+      ) : (
+        <>
+          <button onClick={logar}>Entrar</button>
+          <button onClick={() => { setCriandoConta(true); setErro(""); }}>Criar nova conta</button>
+        </>
+      )}
       {erro && <p style={{ color: "red" }}>{erro}</p>}
     </div>
   );
