@@ -1,15 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-export default function Lotes() {
+export default function Lotes({ token }) {
   const [lotes, setLotes] = useState([]);
   const [nome, setNome] = useState("");
 
-  const adicionar = () => {
-    if (nome) {
-      setLotes([...lotes, { nome, status: "ativo" }]);
-      setNome("");
-    }
+  const buscar = async () => {
+    const res = await fetch("https://suinocultura-backend.onrender.com/lotes", {
+      headers: { Authorization: "Bearer " + token }
+    });
+    const data = await res.json();
+    setLotes(data);
   };
+
+  const adicionar = async () => {
+    if (!nome) return;
+    await fetch("https://suinocultura-backend.onrender.com/lotes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({ nome })
+    });
+    setNome("");
+    buscar();
+  };
+
+  useEffect(() => {
+    buscar();
+  }, []);
 
   return (
     <div>
@@ -22,7 +41,7 @@ export default function Lotes() {
       <button onClick={adicionar}>➕ Adicionar</button>
       <ul>
         {lotes.map((l, i) => (
-          <li key={i}>📦 {l.nome} - {l.status}</li>
+          <li key={i}>📦 {l.nome}</li>
         ))}
       </ul>
     </div>

@@ -1,25 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Lotes from './pages/Lotes';
 
 export default function App() {
-  const [logado, setLogado] = useState(false);
-  const [tela, setTela] = useState("dashboard");
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
 
-  if (!logado) return <Login onLogin={() => setLogado(true)} />;
+  const handleLogin = (tk) => {
+    localStorage.setItem("token", tk);
+    setToken(tk);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setToken("");
+  };
 
   return (
-    <div className="container">
-      <nav className="menu">
-        <button onClick={() => setTela("dashboard")}>📊 Dashboard</button>
-        <button onClick={() => setTela("lotes")}>🐖 Lotes</button>
-        <button onClick={() => setLogado(false)}>🚪 Sair</button>
-      </nav>
-      <div className="conteudo">
-        {tela === "dashboard" && <Dashboard />}
-        {tela === "lotes" && <Lotes />}
-      </div>
-    </div>
+    <Router>
+      {token ? (
+        <>
+          <nav className="menu">
+            <button onClick={() => window.location.href = "/dashboard"}>📊 Dashboard</button>
+            <button onClick={() => window.location.href = "/lotes"}>🐖 Lotes</button>
+            <button onClick={handleLogout}>🚪 Sair</button>
+          </nav>
+          <div className="conteudo">
+            <Routes>
+              <Route path="/dashboard" element={<Dashboard token={token} />} />
+              <Route path="/lotes" element={<Lotes token={token} />} />
+              <Route path="*" element={<Navigate to="/dashboard" />} />
+            </Routes>
+          </div>
+        </>
+      ) : (
+        <Routes>
+          <Route path="*" element={<Login onLogin={handleLogin} />} />
+        </Routes>
+      )}
+    </Router>
   );
 }
