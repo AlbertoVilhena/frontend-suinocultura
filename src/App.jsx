@@ -28,8 +28,8 @@ export default function App() {
           </nav>
           <div className="conteudo">
             <Routes>
-              <Route path="/dashboard" element={<Dashboard token={token} />} />
-              <Route path="/lotes" element={<Lotes token={token} />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/lotes" element={<Lotes />} />
               <Route path="*" element={<Navigate to="/dashboard" />} />
             </Routes>
           </div>

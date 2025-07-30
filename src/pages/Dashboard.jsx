@@ -1,11 +1,40 @@
 import React, { useEffect, useState } from 'react';
 
-export default function Dashboard({ token }) {
+export default function Dashboard() {
   const [dados, setDados] = useState({ gpd: 0, lotes: 0, lucro: 0 });
 
+  const calcular = () => {
+    const lotes = JSON.parse(localStorage.getItem('lotes') || '[]');
+    if (!lotes.length) {
+      setDados({ gpd: 0, lotes: 0, lucro: 0 });
+      return;
+    }
+
+    const gpdTotal = lotes.reduce((acc, l) => {
+      const dias =
+        (new Date(l.dataSaida) - new Date(l.dataEntrada)) / 86400000;
+      const ganho = parseFloat(l.pesoSaida || 0) -
+        parseFloat(l.pesoEntrada || 0);
+      return acc + (dias > 0 ? ganho / dias : 0);
+    }, 0);
+
+    const lucroTotal = lotes.reduce((acc, l) => {
+      const ganhoPeso = parseFloat(l.pesoSaida || 0) -
+        parseFloat(l.pesoEntrada || 0);
+      const receita = ganhoPeso * 5; // valor hipotético por kg
+      const custo = parseFloat(l.custoRacao || 0);
+      return acc + (receita - custo);
+    }, 0);
+
+    setDados({
+      gpd: (gpdTotal / lotes.length).toFixed(2),
+      lotes: lotes.length,
+      lucro: lucroTotal
+    });
+  };
+
   useEffect(() => {
-    // Simulação inicial — depois substituir por rota real
-    setDados({ gpd: 650, lotes: 3, lucro: 2750 });
+    calcular();
   }, []);
 
   return (
