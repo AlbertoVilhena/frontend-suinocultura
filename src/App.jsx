@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Lotes from './pages/Lotes';
@@ -22,8 +22,8 @@ export default function App() {
       {token ? (
         <>
           <nav className="menu">
-            <button onClick={() => window.location.href = "/dashboard"}>📊 Dashboard</button>
-            <button onClick={() => window.location.href = "/lotes"}>🐖 Lotes</button>
+            <Link to="/dashboard"><button>📊 Dashboard</button></Link>
+            <Link to="/lotes"><button>🐖 Lotes</button></Link>
             <button onClick={handleLogout}>🚪 Sair</button>
           </nav>
           <div className="conteudo">

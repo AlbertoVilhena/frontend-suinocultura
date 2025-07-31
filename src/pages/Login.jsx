@@ -6,6 +6,16 @@ export default function Login({ onLogin }) {
   const [erro, setErro] = useState("");
   const [criandoConta, setCriandoConta] = useState(false);
 
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    if (erro) setErro("");
+  };
+
+  const handleSenhaChange = (e) => {
+    setSenha(e.target.value);
+    if (erro) setErro("");
+  };
+
   const validarEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -54,8 +64,18 @@ export default function Login({ onLogin }) {
   return (
     <div className="login">
       <h1>{criandoConta ? "🆕 Criar Conta" : "🐽 Login no Sistema"}</h1>
-      <input type="email" placeholder="E-mail" value={email} onChange={e => setEmail(e.target.value)} />
-      <input type="password" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} />
+      <input
+        type="email"
+        placeholder="E-mail"
+        value={email}
+        onChange={handleEmailChange}
+      />
+      <input
+        type="password"
+        placeholder="Senha"
+        value={senha}
+        onChange={handleSenhaChange}
+      />
       {criandoConta ? (
         <>
           <button onClick={criarConta}>Cadastrar</button>
